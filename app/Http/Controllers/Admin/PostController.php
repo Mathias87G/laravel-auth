@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 use App\Post;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -24,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.posts.create');
     }
 
     /**
@@ -35,7 +37,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $request->validate([
+          'title' => 'required|min:5|max:100',
+          'body' => 'required|min:5|max:1000'
+        ]);
+        $data['user_id'] = Auth::id();
+        $data['slug'] = Str::slug($data['title'], '-');
+        $newPost = new Post();
+        $newPost->fill($data);
+        $saved = $newPost->save();
+        dd($saved);
     }
 
     /**
