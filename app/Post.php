@@ -13,9 +13,15 @@ class Post extends Model
     'slug',
     'updated_at'
   ];
-  
+
   public function user()
   {
     return $this->belongsTo('App\User');
   }
+
+  public function tags()
+  {
+  return $this->belongsToMany('App\Tag');
+  }
+
 }
