@@ -9,15 +9,22 @@
           </ul>
       </div>
   @endif
-  <form action="{{route('posts.update', $post->id)}}" method="post">
+  <form action="{{route('posts.update', $post->id)}}" method="post" enctype="multipart/form-data">
     @csrf
     @method('PATCH')
+    <img src="{{ asset('storage/' . $post->img)}}" alt="{{$post->slug}}"width="300px">
+
     <div class="form-group">
-      <label for="title">Titolo</label>
+      <label class="text-light" for="title">Titolo</label>
       <input type="text" name="title" class="form-control" value="{{$post->title}}">
     </div>
     <div class="form-group">
-       <label for="body">Body</label>
+      <label class="text-light" for="img">Immagine</label>
+      <input class="text-light" type="file" name="img" accept="image/*" >
+    </div>
+
+    <div class="form-group">
+       <label class="text-light" for="body">Body</label>
        <textarea class="form-control" name="body"  rows="3">{{$post->body}}</textarea>
     </div>
     <div class="form-group">

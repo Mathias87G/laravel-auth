@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Post;
 use App\Tag;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -44,12 +46,16 @@ class PostController extends Controller
         $data = $request->all();
         $request->validate([
           'title' => 'required|min:5|max:100',
-          'body' => 'required|min:5|max:1000'
+          'body' => 'required|min:5|max:1000',
+        'img' => 'image'
         ]);
         $data['user_id'] = Auth::id();
         $data['slug'] = Str::slug($data['title'], '-');
 
         $newPost = new Post();
+        if(!empty($data['img'])){
+          $data['img'] = Storage::disk('public')->put('images', $data['img']);
+        }
         $newPost->fill($data);
         $saved = $newPost->save();
         $newPost->tags()->attach($data['tags']);
@@ -93,6 +99,15 @@ class PostController extends Controller
     {
        $data = $request->all(); #array di dati
        $data['slug'] = Str::slug($data['title'], '-');
+       $data['updated_at'] = Carbon::now('Europe/Rome');
+
+       if(!empty($data['img'])){
+         if (!empty($post->img)){
+           Storage::disk('public')->delete($post->img);
+         }
+         $data['img'] = Storage::disk('public')->put('images', $data['img']);
+       }
+       
        $post->update($data); #update salva già i dati
        $post->tags()->sync($data['tags']);
        if ($post) {
