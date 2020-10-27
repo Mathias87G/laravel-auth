@@ -19,8 +19,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        // $posts = Post::all();
-        $posts = Post::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+        if (Auth::user()->role->role == 'super'){
+          $posts = Post::all();
+        } elseif (Auth::user()->role->role == 'admin'){
+          $posts = Post::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+        }
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -107,7 +110,7 @@ class PostController extends Controller
          }
          $data['img'] = Storage::disk('public')->put('images', $data['img']);
        }
-       
+
        $post->update($data); #update salva già i dati
        $post->tags()->sync($data['tags']);
        if ($post) {
